@@ -1,0 +1,48 @@
+{"level":"INFO","time":"2025-03-05T10:16:34.588+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T10:16:34.655+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:16:34.659+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:16:34.662+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:16:34.664+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:16:34.668+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":3,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T10:19:04.812+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T10:19:04.896+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:19:04.899+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:19:04.904+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:19:04.910+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T10:19:04.914+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":3,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T11:45:26.423+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"INFO","time":"2025-03-05T11:46:31.101+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T11:46:31.236+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T11:46:31.240+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T11:46:31.244+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T11:46:31.247+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T11:46:31.251+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"the topic=seckill-request-topic route info not found","request":{"user_id":3,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T15:45:31.562+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T15:45:43.640+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 192.168.221.237:10911: i/o timeout","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T15:45:43.640+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 192.168.221.237:10911: i/o timeout","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T15:45:46.641+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 192.168.221.237:10911: i/o timeout","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T15:45:46.641+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 192.168.221.237:10911: i/o timeout","request":{"user_id":3,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T15:45:46.641+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 192.168.221.237:10911: i/o timeout","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T16:14:40.055+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T16:14:49.117+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:14:52.118+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:14:52.118+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T16:20:40.929+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T16:20:49.973+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:20:52.974+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:20:55.975+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:20:55.975+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:20:55.975+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":3,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T16:28:43.249+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T16:28:55.299+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:28:55.299+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:28:58.300+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:28:58.300+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":3,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:28:58.300+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"INFO","time":"2025-03-05T16:35:21.842+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"INFO","time":"2025-03-05T16:37:09.153+0800","caller":"logger/logger.go:42","msg":"init logger success"}
+{"level":"ERROR","time":"2025-03-05T16:37:18.193+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":0,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:37:21.193+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":2,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:37:24.195+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":4,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:37:24.195+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":1,"goods_id":1001,"quantity":1}}
+{"level":"ERROR","time":"2025-03-05T16:37:24.195+0800","caller":"mq/produce.go:37","msg":"发送秒杀请求到 RocketMQ 失败","error":"dial tcp 172.18.0.3:10911: i/o timeout","request":{"user_id":3,"goods_id":1001,"quantity":1}}

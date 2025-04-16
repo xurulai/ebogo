@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = ".;proto";
+
+// 秒杀服务
+service FlashSaleService {
+    // 处理秒杀请求
+    rpc HandleFlashSale(FlashSaleRequest) returns (FlashSaleResponse);
+}
+
+// 秒杀请求
+message FlashSaleRequest {
+    string product_id = 1; // 商品ID
+    string user_id = 2;    // 用户ID
+}
+
+// 秒杀响应
+message FlashSaleResponse {
+    bool success = 1;      // 是否秒杀成功
+    string message = 2;    // 响应消息
+    string order_id = 3;   // 秒杀成功时的订单ID
+}
+
+// 订单服务
+service OrderService {
+    // 创建订单
+    rpc CreateOrder(OrderRequest) returns (OrderResponse);
+}
+
+// 订单请求
+message OrderRequest {
+    string product_id = 1; // 商品ID
+    string user_id = 2;    // 用户ID
+    string flash_sale_id = 3; // 秒杀活动ID（可选）
+}
+
+// 订单响应
+message OrderResponse {
+    bool success = 1;      // 是否创建成功
+    string message = 2;    // 响应消息
+    string order_id = 3;   // 订单ID
+}

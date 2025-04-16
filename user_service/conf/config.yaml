@@ -1,0 +1,37 @@
+name: "stock_srv"
+mode: "dev"
+ip: "127.0.0.1"
+rpcPort: 8399
+httpPort: 8092
+version: "v0.0.1"
+start_time: "2022-06-01"
+machine_id: 2
+
+# 鍐掑彿鍚庡姞绌烘牸
+# 缂╄繘鏄繛缁殑涓や釜绌烘牸
+# 鏈夊叴瓒ｇ殑鍚屽鍙互浜嗚В涓媡oml
+log:
+  level: "debug"
+  filename: "log/stock_srv.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: "123456"
+  dbname: "mysql_demo"
+  max_open_conns: 100
+  max_idle_conns: 10
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 100
+
+consul:
+  addr: "127.0.0.1:8500"
