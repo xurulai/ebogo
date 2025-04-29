@@ -17,8 +17,17 @@ import (
 // biz层业务代码
 // biz -> dao
 
-var localCache = &sync.Map{}//
+var (
+	localCache  = sync.Map{} // 本地缓存
+	// 定义一个频道名
+	channelName = "cache_invalidation_channel"
+)
 
+// 定义一个结构体来表示频道发布的内容
+type CacheUpdateMessage struct {
+	CacheKey string                 `json:"cache_key"`
+	Data     *proto.GoodsDetail `json:"data"`
+}
 // GetRoomGoodsListProto 根据直播间 ID 查询直播间绑定的所有商品信息，并组装成 protobuf 响应对象返回
 func GetGoodsByRoom(ctx context.Context, roomId int64) (*proto.GoodsListResp, error) {
 	// 1. 先去 xx_room_goods 表，根据 room_id 查询出所有的 goods_id
@@ -183,9 +192,95 @@ func GetGoodsDetailById(ctx context.Context, goodsId int64) (*proto.GoodsDetail,
 	//将数据存入本地缓存
 	setLocalCache(cacheKey, resp, time.Minute*10)
 
+	//构造通知消息并发布到Redis频道
+	message := CacheUpdateMessage{
+		CacheKey: cacheKey,
+		Data: resp,
+	}
+	messageBytes, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("Failed to marshal update message: %v", err)
+	}
+	//发布消息到频道
+	n,err := redis.GetClient().Publish(ctx,channelName,messageBytes).Result()
+	if err != nil {
+		log.Printf("Failed to publish message to channel: %v", err)
+	} else {
+		log.Printf("Published message to channel %s, number of subscribers: %d", channelName, n)
+	}
 	// 返回商品详情响应
 	log.Printf("Returning goods detail response: %+v", resp)
 	return resp, nil
+}
+
+// 定义一个函数来订阅频道，并在收到消息时更新本地缓存和 Redis 缓存
+func startSubscriber(ctx context.Context){
+	subscriber := redis.GetClient().Subscribe(ctx,channelName)
+	defer subscriber.Close()
+	for{
+		message,err := subscriber.ReceiveMessage(ctx)
+		if err != nil {
+			log.Printf("Error receiving message: %v", err)
+			return
+		}
+		fmt.Printf("Received message: %s on channel: %s\n", message.Payload, message.Channel)
+
+		//解析消息内容
+		var updateMessage CacheUpdateMessage
+		err = json.Unmarshal([]byte(message.Payload), &updateMessage)
+		if err != nil {
+			log.Printf("Error parsing update message: %v", err)
+			continue
+		}
+
+		
+		// 更新本地缓存
+		if updateMessage.Data != nil {
+			localCache.Store(updateMessage.CacheKey, updateMessage.Data)
+			log.Printf("Updated local cache for key: %s", updateMessage.CacheKey)
+		} else {
+			localCache.Delete(updateMessage.CacheKey)
+			log.Printf("Invalidated local cache for key: %s", updateMessage.CacheKey)
+		}
+		
+		// 更新 Redis 缓存
+		updateRedisCache(ctx,updateMessage.CacheKey, updateMessage.Data)
+	}
+}
+
+
+// 更新 Redis 缓存
+func updateRedisCache(ctx context.Context,cacheKey string, data *proto.GoodsDetail) {
+	if data == nil {
+		// 如果数据为 nil，从 Redis 中删除该键
+		_, err := redis.GetClient().Del(ctx, cacheKey).Result()
+		if err != nil {
+			log.Printf("Failed to delete from Redis: %v", err)
+		}
+		log.Printf("Deleted from Redis for key: %s", cacheKey)
+		return
+	}
+
+	// 将数据序列化为 JSON
+	cachedBytes, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("Failed to marshal data: %v", err)
+		return
+	}
+
+	// 设置缓存的基础过期时间和随机过期时间
+	baseTTL := 10 * time.Minute
+	randomTTL := time.Duration(rand.Intn(5*60)) * time.Second
+	totalTTL := baseTTL + randomTTL
+
+	// 将序列化后的数据写入 Redis 缓存
+	_, err = redis.GetClient().Set(ctx, cacheKey, cachedBytes, totalTTL).Result()
+	if err != nil {
+		log.Printf("Failed to set data in Redis: %v", err)
+		return
+	}
+
+	log.Printf("Updated Redis cache for key: %s", cacheKey)
 }
 
 // UpdateGoodsDetail 更新商品详情，并删除缓存
