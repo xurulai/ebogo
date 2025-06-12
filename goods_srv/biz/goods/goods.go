@@ -22,11 +22,16 @@ var (
 	// 定义一个频道名
 	channelName = "cache_invalidation_channel"
 )
-
+// 定义一个结构体来表示缓存数据和版本号
+type CacheDataWithVersion struct {
+	Data     *proto.GoodsDetail `json:"data"`
+	Version  int64              `json:"version"`
+}
 // 定义一个结构体来表示频道发布的内容
 type CacheUpdateMessage struct {
-	CacheKey string                 `json:"cache_key"`
-	Data     *proto.GoodsDetail `json:"data"`
+	CacheKey  string              `json:"cache_key"`
+	Data      *proto.GoodsDetail `json:"data"`
+	Version   int64              `json:"version"`
 }
 // GetRoomGoodsListProto 根据直播间 ID 查询直播间绑定的所有商品信息，并组装成 protobuf 响应对象返回
 func GetGoodsByRoom(ctx context.Context, roomId int64) (*proto.GoodsListResp, error) {
@@ -84,38 +89,60 @@ func GetGoodsByRoom(ctx context.Context, roomId int64) (*proto.GoodsListResp, er
 func GetGoodsDetailById(ctx context.Context, goodsId int64) (*proto.GoodsDetail, error) {
 	// 构造缓存键
 	cacheKey := fmt.Sprintf("goods_detail_%d", goodsId)
-
-
-	//1.首先尝试从本地缓存中获取数据
-	if localCacheData,ok := localCache.Load(cacheKey);ok{
-		log.Printf("Local cache hit:%d", goodsId)
-		return localCacheData.(*proto.GoodsDetail), nil
+	// 1. 首先尝试从本地缓存中获取数据
+	if localCacheData, ok := localCache.Load(cacheKey); ok {
+		currentData := localCacheData.(CacheDataWithVersion)
+		// 检查本地缓存的版本号是否为最新
+		// 从 Redis 获取最新的版本号
+		latestVersion, err := getLatestVersionFromRedis(cacheKey)
+		if err != nil {
+			log.Printf("Failed to get latest version from Redis: %v", err)
+			// 如果获取最新版本号失败，仍然返回本地缓存的数据
+			log.Printf("Local cache hit (version may not be latest):%d, version: %d", goodsId, currentData.Version)
+			return currentData.Data, nil
+		}
+		if currentData.Version == latestVersion {
+			log.Printf("Local cache hit:%d, version: %d", goodsId, currentData.Version)
+			//本地缓存的是最新数据直接返回
+			return currentData.Data, nil
+		} else {
+			log.Printf("Local cache version for %d is outdated (local: %d, latest: %d), fetching from Redis", goodsId, currentData.Version, latestVersion)
+			// 本地缓存版本号不是最新的，从 Redis 获取最新数据
+			return getFromRedisAndUpdateLocalCache(ctx, cacheKey,goodsId)
+		}
 	}
-	// 2. 首先尝试从 Redis 缓存中获取数据
+	
+	// 2. 尝试从 Redis 缓存中获取数据
+	return getFromRedisAndUpdateLocalCache(ctx, cacheKey,goodsId)
+}
+
+
+// 从 Redis 获取数据并更新本地缓存
+func getFromRedisAndUpdateLocalCache(ctx context.Context, cacheKey string,goodsId int64) (*proto.GoodsDetail, error) {
 	cachedData, err := redis.GetClient().Get(ctx, cacheKey).Result()
 	if err == nil && cachedData != "" {
 		// 缓存命中
-		log.Printf("Cache hit for GoodsId: %d", goodsId)
-		var goodsDetail proto.GoodsDetail
-		// 将缓存中的 JSON 数据反序列化为 GoodsDetail 结构体
-		if err := json.Unmarshal([]byte(cachedData), &goodsDetail); err != nil {
+		var cacheData CacheDataWithVersion
+		// 将缓存中的 JSON 数据反序列化
+		if err := json.Unmarshal([]byte(cachedData), &cacheData); err != nil {
 			log.Printf("Failed to unmarshal cached data: %v", err)
 			return nil, errno.ErrQueryFailed
 		}
-		return &goodsDetail, nil
+		// 更新本地缓存
+		updateLocalCache(cacheKey, cacheData.Data, cacheData.Version)
+		log.Printf("Cache hit for GoodsId: %s, version: %d", cacheKey, cacheData.Version)
+		return cacheData.Data, nil
 	} else if err != nil {
 		// 如果从 Redis 获取数据失败，记录日志
 		log.Printf("Failed to get data from cache: %v", err)
 	} else {
 		// 缓存未命中
-		log.Printf("Cache miss for GoodsId: %d", goodsId)
+		log.Printf("Cache miss for GoodsId: %s", cacheKey)
 	}
 
 	// 缓存未命中，从数据库中查询数据
-	// 1. 使用商品 ID 从 MySQL 数据库中查询商品详情
-
 	// 构造分布式锁的 key。
-	mutexname := fmt.Sprintf("lock_goods_detail_%d", goodsId)
+	mutexname := fmt.Sprintf("lock_goods_detail_%s", cacheKey)
 
 	// 创建 Redis 分布式锁。
 	mutex := redis.Rs.NewMutex(mutexname)
@@ -132,19 +159,19 @@ func GetGoodsDetailById(ctx context.Context, goodsId int64) (*proto.GoodsDetail,
 		return nil, errno.ErrQueryFailed
 	}
 
-	// 2. 检查查询结果是否为空
+	// 检查查询结果是否为空
 	if goodsDetail == nil {
-		log.Printf("Goods detail not found for GoodsId: %d", goodsId)
+		log.Printf("Goods detail not found for GoodsId: %s", cacheKey)
 		return nil, errno.ErrGoodsDetailNull
 	}
 
-	// 3. 检查商品详情数据是否有效
+	// 检查商品详情数据是否有效
 	if goodsDetail.GoodsId == 0 || goodsDetail.Title == "" || goodsDetail.Price == 0 {
 		log.Printf("Invalid goods detail data: %+v", goodsDetail)
 		return nil, errno.ErrGoodsDetailNull
 	}
 
-	// 4. 构造返回的响应数据
+	// 构造返回的响应数据
 	resp := &proto.GoodsDetail{
 		GoodsId:    goodsDetail.GoodsId,
 		CategoryId: goodsDetail.CategoryId,
@@ -155,32 +182,38 @@ func GetGoodsDetailById(ctx context.Context, goodsId int64) (*proto.GoodsDetail,
 		Brief:      goodsDetail.Brief,
 	}
 
-	// 5. 格式化市场价格和价格字段
+	// 格式化市场价格和价格字段
 	if goodsDetail.MarketPrice > 0 {
-		// 如果市场价格大于 0，将其除以 100 转换为浮点数，并格式化为两位小数
 		resp.MarketPrice = fmt.Sprintf("%.2f", float64(goodsDetail.MarketPrice)/100)
 	} else {
 		resp.MarketPrice = "0.00"
-		log.Printf("MarketPrice is zero or invalid for GoodsId: %d", goodsId)
+		log.Printf("MarketPrice is zero or invalid for GoodsId: %s", cacheKey)
 	}
 
 	if goodsDetail.Price > 0 {
-		// 如果价格大于 0，将其除以 100 转换为浮点数，并格式化为两位小数
 		resp.Price = fmt.Sprintf("%.2f", float64(goodsDetail.Price)/100)
 	} else {
 		resp.Price = "0.00"
-		log.Printf("Price is zero or invalid for GoodsId: %d", goodsId)
+		log.Printf("Price is zero or invalid for GoodsId: %s", cacheKey)
 	}
 
-	// 6. 将查询结果序列化为 JSON 数据
-	cachedBytes, err := json.Marshal(resp)
+	// 生成新的版本号
+	version := time.Now().UnixNano()
+
+	// 构造缓存数据和版本号
+	cacheData := CacheDataWithVersion{
+		Data:    resp,
+		Version: version,
+	}
+
+	// 将数据序列化为 JSON
+	cachedBytes, err := json.Marshal(cacheData)
 	if err != nil {
 		log.Printf("Failed to marshal data: %v", err)
 		return nil, errno.ErrQueryFailed
 	}
 
-	// 7. 将序列化后的数据写入 Redis 缓存
-	// 设置缓存的基础过期时间（10 分钟）和随机过期时间（0-5 分钟），避免缓存同时过期,解决缓存雪崩
+	// 将序列化后的数据写入 Redis 缓存
 	baseTTL := 10 * time.Minute
 	randomTTL := time.Duration(rand.Intn(5*60)) * time.Second
 	totalTTL := baseTTL + randomTTL
@@ -189,27 +222,29 @@ func GetGoodsDetailById(ctx context.Context, goodsId int64) (*proto.GoodsDetail,
 		log.Printf("Failed to set data in cache: %v", err)
 	}
 
-	//将数据存入本地缓存
-	setLocalCache(cacheKey, resp, time.Minute*10)
+	// 将数据存入本地缓存
+	updateLocalCache(cacheKey, resp, version)
 
-	//构造通知消息并发布到Redis频道
+	// 构造通知消息并发布到 Redis 频道
 	message := CacheUpdateMessage{
 		CacheKey: cacheKey,
-		Data: resp,
+		Data:     resp,
+		Version:  version,
 	}
 	messageBytes, err := json.Marshal(message)
 	if err != nil {
 		log.Printf("Failed to marshal update message: %v", err)
 	}
-	//发布消息到频道
-	n,err := redis.GetClient().Publish(ctx,channelName,messageBytes).Result()
+	// 发布消息到频道
+	n, err := redis.GetClient().Publish(ctx, channelName, messageBytes).Result()
 	if err != nil {
 		log.Printf("Failed to publish message to channel: %v", err)
 	} else {
 		log.Printf("Published message to channel %s, number of subscribers: %d", channelName, n)
 	}
+
 	// 返回商品详情响应
-	log.Printf("Returning goods detail response: %+v", resp)
+	log.Printf("Returning goods detail response: %+v, version: %d", resp, version)
 	return resp, nil
 }
 
@@ -235,20 +270,34 @@ func startSubscriber(ctx context.Context){
 
 		
 		// 更新本地缓存
-		if updateMessage.Data != nil {
-			localCache.Store(updateMessage.CacheKey, updateMessage.Data)
-			log.Printf("Updated local cache for key: %s", updateMessage.CacheKey)
-		} else {
-			localCache.Delete(updateMessage.CacheKey)
-			log.Printf("Invalidated local cache for key: %s", updateMessage.CacheKey)
-		}
+		updateLocalCache(updateMessage.CacheKey, updateMessage.Data, updateMessage.Version)
 		
 		// 更新 Redis 缓存
 		updateRedisCache(ctx,updateMessage.CacheKey, updateMessage.Data)
 	}
 }
 
+// 更新本地缓存
+func updateLocalCache(cacheKey string, data *proto.GoodsDetail, version int64) {
+	// 获取当前本地缓存中的数据和版本号
+	current, ok := localCache.Load(cacheKey)
+	if ok {
+		currentData := current.(CacheDataWithVersion)
+		// 如果本地缓存的版本号大于等于收到的版本号，说明本地缓存是新的，不需要更新
+		if currentData.Version >= version {
+			log.Printf("Local cache for key %s is already up to date", cacheKey)
+			return
+		}
+	}
 
+	// 更新本地缓存
+	newCacheData := CacheDataWithVersion{
+		Data:    data,
+		Version: version,
+	}
+	localCache.Store(cacheKey, newCacheData)
+	log.Printf("Updated local cache for key: %s, version: %d", cacheKey, version)
+}
 // 更新 Redis 缓存
 func updateRedisCache(ctx context.Context,cacheKey string, data *proto.GoodsDetail) {
 	if data == nil {
@@ -304,6 +353,26 @@ func UpdateGoodsDetail(ctx context.Context, goodsId int64, newPrice int64) (*pro
 	return &proto.Response{}, nil
 }
 
+// 从 Redis 获取最新的版本号
+func getLatestVersionFromRedis(cacheKey string) (int64, error) {
+	cachedData, err := redis.GetClient().Get(context.Background(), cacheKey).Result()
+	if err != nil {
+		if cachedData == ""{
+			log.Printf("No cached data found for key: %s", cacheKey)
+			return 0, nil
+		}
+		log.Printf("Failed to get data from Redis: %v", err)
+		return 0, err
+	}
+
+	var cacheData CacheDataWithVersion
+	if err := json.Unmarshal([]byte(cachedData), &cacheData); err != nil {
+		log.Printf("Failed to unmarshal cached data: %v", err)
+		return 0, err
+	}
+
+	return cacheData.Version, nil
+}
 
 //设置本地缓存
 func setLocalCache(key string,value interface{},ttl time.Duration){
