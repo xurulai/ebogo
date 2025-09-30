@@ -1,0 +1,13 @@
+Name: gateway-api
+Host: 0.0.0.0
+Port: 8080
+
+# 订单 RPC 服务配置
+OrderRpc:
+  Endpoints:
+    - order-service:9002 # Docker Compose 服务名
+  Timeout: 5000
+
+
+
+

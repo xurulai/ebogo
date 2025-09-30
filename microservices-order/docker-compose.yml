@@ -1,0 +1,148 @@
+version: '3.8'
+
+networks:
+  microservice-network:
+    external: true
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: order-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: mysql_demo
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: order-redis
+    restart: unless-stopped
+    ports:
+      - "6381:6379"
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # RocketMQ NameServer
+  rocketmq-nameserver:
+    image: apache/rocketmq:4.9.4
+    container_name: order-rocketmq-nameserver
+    restart: unless-stopped
+    ports:
+      - "9877:9876"
+    environment:
+      - JAVA_OPT_EXT=-server -Xms512m -Xmx512m
+    command: ["sh", "mqnamesrv"]
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9876"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # RocketMQ Broker
+  rocketmq-broker:
+    image: apache/rocketmq:4.9.4
+    container_name: order-rocketmq-broker
+    restart: unless-stopped
+    ports:
+      - "10910:10909"
+      - "10912:10911"
+    environment:
+      - JAVA_OPT_EXT=-server -Xms512m -Xmx512m
+      - NAMESRV_ADDR=rocketmq-nameserver:9876
+    command: ["sh", "mqbroker", "-n", "rocketmq-nameserver:9876"]
+    depends_on:
+      rocketmq-nameserver:
+        condition: service_healthy
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 10911"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 订单 RPC 服务
+  order-service:
+    build:
+      context: .
+      dockerfile: ./order-rpc-service/Dockerfile
+    container_name: order-service
+    restart: unless-stopped
+    expose:
+      - "9002"  # 只在内部网络暴露
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DB=mysql_demo
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ROCKETMQ_NAMESERVER=rocketmq-nameserver:9876
+    volumes:
+      - ./order-rpc-service/etc/order-rpc-minimal.yaml:/root/etc/order-rpc.yaml
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rocketmq-broker:
+        condition: service_healthy
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9002"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API 网关（统一对外入口）
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    container_name: order-api-gateway
+    restart: unless-stopped
+    ports:
+      - "8082:8080"  # 对外暴露的唯一端口
+    environment:
+      - ORDER_SERVICE_ENDPOINT=order-service:9002
+    volumes:
+      - ./api-gateway/etc/gateway-api-docker.yaml:/root/etc/gateway-api.yaml
+    depends_on:
+      order-service:
+        condition: service_healthy
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql_data:
+

@@ -1,0 +1,22 @@
+Name: goods-rpc
+ListenOn: 0.0.0.0:9001
+Mode: pro
+Timeout: 0  # 0 表示关闭服务端超时拦截器
+
+# MySQL 数据库配置（Docker 环境）
+MySQL:
+  Host: order-mysql
+  Port: 3306
+  User: root
+  Password: "123456"
+  Database: mysql_demo
+  Charset: utf8mb4
+
+# Redis 配置（Docker 环境，供业务使用）
+RedisConf:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0
+  PoolSize: 10
+

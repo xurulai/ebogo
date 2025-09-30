@@ -1,0 +1,30 @@
+package gateway
+
+import (
+	"net/http"
+
+	"api-gateway/internal/logic/gateway"
+	"api-gateway/internal/svc"
+	"api-gateway/internal/types"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
+)
+
+func RollbackStockHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req types.RollbackStockRequest
+		if err := httpx.Parse(r, &req); err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
+		}
+
+		l := gateway.NewRollbackStockLogic(r.Context(), svcCtx)
+		resp, err := l.RollbackStock(&req)
+		if err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+		} else {
+			httpx.OkJsonCtx(r.Context(), w, resp)
+		}
+	}
+}
+

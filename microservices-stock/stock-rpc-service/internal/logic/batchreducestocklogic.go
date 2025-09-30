@@ -1,0 +1,70 @@
+package logic
+
+import (
+	"context"
+	stockpb "stock-rpc-service/proto/stock"
+	"stock-rpc-service/internal/biz"
+	"stock-rpc-service/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+type BatchReduceStockLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewBatchReduceStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *BatchReduceStockLogic {
+	return &BatchReduceStockLogic{
+		ctx:    ctx,
+		svcCtx: svcCtx,
+		Logger: logx.WithContext(ctx),
+	}
+}
+
+// BatchReduceStock 批量减少库存
+func (l *BatchReduceStockLogic) BatchReduceStock(in *stockpb.StockInfoList) (*stockpb.Response, error) {
+	// 参数校验
+	if len(in.GetData()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "商品列表不能为空")
+	}
+
+	// 创建业务逻辑实例
+	stockBiz := biz.NewStockBiz(l.svcCtx)
+
+	// 批量减少库存
+	// 注意：这里简化实现，实际生产环境中可能需要事务处理
+	var failedItems []int64
+	for _, item := range in.GetData() {
+		if item.GetGoodsId() <= 0 || item.GetStock() <= 0 {
+			failedItems = append(failedItems, item.GetGoodsId())
+			continue
+		}
+
+		// 减少库存（这里假设 orderId 为 0，实际应用中需要传入正确的订单ID）
+		err := stockBiz.ReduceStock(l.ctx, item.GetGoodsId(), item.GetStock(), 0)
+		if err != nil {
+			l.Errorf("BatchReduceStock failed for goods_id %d: %v", item.GetGoodsId(), err)
+			failedItems = append(failedItems, item.GetGoodsId())
+		}
+	}
+
+	if len(failedItems) > 0 {
+		return &stockpb.Response{
+			Success: false,
+			Message: "部分商品库存扣减失败",
+		}, nil
+	}
+
+	return &stockpb.Response{
+		Success: true,
+		Message: "批量扣减库存成功",
+	}, nil
+}
+
+
+
+

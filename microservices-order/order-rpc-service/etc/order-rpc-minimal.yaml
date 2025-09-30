@@ -1,0 +1,54 @@
+Name: order-rpc
+ListenOn: 0.0.0.0:9002
+Mode: dev
+Timeout: 0  # 关闭服务端超时拦截器
+
+# MySQL 数据库配置
+MySQL:
+  Host: mysql
+  Port: 3306
+  User: root
+  Password: "123456"
+  Database: mysql_demo
+  Charset: utf8mb4
+
+# Redis 配置
+RedisConf:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0
+  PoolSize: 10
+
+# RocketMQ 配置
+RocketMQ:
+  NameServer: ""
+  GroupName: "order_srv_1"
+  Topic:
+    CreateOrder: "xx_create_order"
+    PayTimeout: "xx_pay_timeout"
+    StockRollback: "xx_stock_rollback"
+    CreateOrderSuccessfully: "xx_create_order_successfully"
+
+# Snowflake ID 生成器配置
+Snowflake:
+  StartTime: "2023-01-01"
+  MachineID: 1
+
+# 外部服务配置
+GoodsService:
+  Name: "goods_srv"
+  Endpoints:
+    - "goods-service:9001"
+  Timeout: 5000
+
+StockService:
+  Name: "stock_srv"
+  Endpoints:
+    - "stock-service:8889"
+  Timeout: 5000
+
+# Consul 配置 - 暂时禁用
+Consul:
+  Addr: ""
+#   Addr: "consul:8500"

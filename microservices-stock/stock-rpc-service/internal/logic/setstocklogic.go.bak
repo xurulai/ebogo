@@ -1,0 +1,54 @@
+package logic
+
+import (
+	"context"
+	stockpb "microservices-stock-proto/stock"
+	"stock-rpc-service/internal/biz"
+	"stock-rpc-service/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+type SetStockLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewSetStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SetStockLogic {
+	return &SetStockLogic{
+		ctx:    ctx,
+		svcCtx: svcCtx,
+		Logger: logx.WithContext(ctx),
+	}
+}
+
+// SetStock 设置库存
+func (l *SetStockLogic) SetStock(in *stockpb.GoodsStockInfo) (*stockpb.Response, error) {
+	// 参数校验
+	if in.GetGoodsId() <= 0 {
+		return nil, status.Error(codes.InvalidArgument, "无效的商品 ID")
+	}
+	if in.GetStock() < 0 {
+		return nil, status.Error(codes.InvalidArgument, "库存数量不能为负")
+	}
+
+	// 创建业务逻辑实例
+	stockBiz := biz.NewStockBiz(l.svcCtx)
+
+	// 调用业务逻辑设置库存
+	err := stockBiz.SetStock(l.ctx, in.GetGoodsId(), in.GetStock())
+	if err != nil {
+		l.Errorf("SetStock failed: %v", err)
+		return nil, status.Errorf(codes.Internal, "设置库存失败: %v", err)
+	}
+
+	// 返回成功响应
+	return &stockpb.Response{
+		Success: true,
+		Message: "设置库存成功",
+	}, nil
+}
+

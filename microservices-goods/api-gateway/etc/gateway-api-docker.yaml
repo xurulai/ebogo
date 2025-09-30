@@ -1,0 +1,17 @@
+Name: gateway-api
+Host: 0.0.0.0
+Port: 8080
+
+# gRPC服务配置
+GoodsRpc:
+  Endpoints:
+    - goods-service:9001
+  Timeout: 0
+
+# 日志配置（go-zero）
+Log:
+  ServiceName: gateway-api
+  Mode: file
+  Path: /root/logs
+  Level: info
+  Encoding: json

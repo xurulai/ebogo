@@ -1,0 +1,133 @@
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Goods RPC Service (9001)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/microservices-goods/goods-rpc-service/goods-rpc.go",
+      "cwd": "${workspaceFolder}/microservices-goods/goods-rpc-service",
+      "args": ["-f", "etc/goods-rpc.yaml"],
+      "env": {
+        "GO111MODULE": "on"
+      },
+      "showLog": true
+    },
+    {
+      "name": "Launch API Gateway (8080)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/microservices-goods/api-gateway/gateway.go",
+      "args": ["-f", "etc/gateway-api.yaml"],
+      "cwd": "${workspaceFolder}/microservices-goods/api-gateway",
+      "env": {
+        "GO111MODULE": "on"
+      }
+    },
+    {
+      "name": "Launch Stock RPC Service (8889)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/microservices-stock/stock-rpc-service",
+      "args": ["-f", "etc/stock-rpc.yaml"],
+      "cwd": "${workspaceFolder}/microservices-stock/stock-rpc-service",
+      "env": {}
+    },
+    {
+      "name": "Launch Stock API Gateway (8081)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/microservices-stock/api-gateway",
+      "args": ["-f", "etc/gateway-api.yaml"],
+      "cwd": "${workspaceFolder}/microservices-stock/api-gateway",
+      "env": {}
+    },
+    {
+      "name": "Launch Order RPC Service (9002)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/microservices-order/order-rpc-service/order-rpc-simple.go",
+      "args": ["-f", "etc/order-rpc-simple.yaml"],
+      "cwd": "${workspaceFolder}/microservices-order/order-rpc-service",
+      "env": {},
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Launch Order RPC Service (Full)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/microservices-order/order-rpc-service/order-rpc.go",
+      "args": ["-f", "etc/order-rpc-docker.yaml"],
+      "cwd": "${workspaceFolder}/microservices-order/order-rpc-service",
+      "env": {},
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Launch Order API Gateway (8080)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/microservices-order/api-gateway/gateway.go",
+      "args": ["-f", "etc/gateway-api.yaml"],
+      "cwd": "${workspaceFolder}/microservices-order/api-gateway",
+      "env": {},
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Goods Gateway + RPC",
+      "configurations": [
+        "Launch Goods RPC Service (9001)",
+        "Launch API Gateway (8080)"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Launch Stock Gateway + RPC",
+      "configurations": [
+        "Launch Stock RPC Service (8889)",
+        "Launch Stock API Gateway (8081)"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Launch Order Gateway + RPC",
+      "configurations": [
+        "Launch Order RPC Service (9002)",
+        "Launch Order API Gateway (8080)"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Launch All Gateways + RPCs",
+      "configurations": [
+        "Launch Goods RPC Service (9001)",
+        "Launch API Gateway (8080)",
+        "Launch Stock RPC Service (8889)",
+        "Launch Stock API Gateway (8081)",
+        "Launch Order RPC Service (9002)",
+        "Launch Order API Gateway (8082)"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Launch Order RPC Only",
+      "configurations": [
+        "Launch Order RPC Service (9002)"
+      ],
+      "stopAll": true
+    }
+  ]
+}
+
+
+
+

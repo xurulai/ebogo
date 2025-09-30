@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package stock;
+
+// 设置 Go package 路径，用于生成的 Go 代码
+option go_package = "microservices-stock-proto/stock";
+
+// 库存服务定义
+service StockService {
+    // 设置库存
+    rpc SetStock(GoodsStockInfo) returns (Response);
+    // 获取库存
+    rpc GetStock(GetStockRequest) returns (GoodsStockInfo);
+    // 减少库存
+    rpc ReduceStock(ReduceStockInfo) returns (Response);
+    // 回滚库存
+    rpc RollbackStock(RollBackStockInfo) returns (Response);
+    // 批量获取库存
+    rpc BatchGetStock(StockInfoList) returns (StockInfoList);
+    // 批量减少库存
+    rpc BatchReduceStock(StockInfoList) returns (Response);
+}
+
+// 通用响应消息
+message Response {
+    bool success = 1;       // 操作是否成功
+    string message = 2;     // 操作结果的描述信息
+}
+
+// 获取库存请求
+message GetStockRequest {
+    int64 goods_id = 1;     // 商品ID
+}
+
+// 商品库存信息
+message GoodsStockInfo {
+    int64 goods_id = 1;     // 商品ID
+    int64 stock = 2;        // 当前库存数量
+}
+
+// 减少库存请求
+message ReduceStockInfo {
+    int64 goods_id = 1;     // 商品ID
+    int64 num = 2;          // 减少的数量
+    int64 order_id = 3;     // 订单ID（用于关联订单，便于后续回滚或查询）
+}
+
+// 回滚库存请求
+message RollBackStockInfo {
+    int64 goods_id = 1;     // 商品ID
+    int64 rollback_num = 2; // 回滚库存的数量
+    int64 order_id = 3;     // 订单ID（用于关联订单，便于后续回滚或查询）
+}
+
+// 批量库存信息
+message StockInfoList {
+    repeated GoodsStockInfo data = 1;  // 库存信息列表，用于批量操作
+}
+
+
+
+

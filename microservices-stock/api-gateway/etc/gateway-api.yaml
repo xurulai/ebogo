@@ -1,0 +1,14 @@
+Name: stock-gateway
+Host: 0.0.0.0
+Port: 8080
+Mode: dev
+
+# 库存 RPC 服务配置
+StockRpc:
+  Endpoints:
+    - 127.0.0.1:8889
+  Timeout: 5000
+
+
+
+

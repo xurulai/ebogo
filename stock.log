@@ -1,0 +1,100 @@
+time="2025-09-28T19:54:03+08:00" level=warning msg="/Users/xurulai/ebogo/microservices-stock/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 781B done
+#1 DONE 0.0s
+
+#2 [api-gateway internal] load build definition from Dockerfile
+#2 transferring dockerfile: 734B 0.0s done
+#2 DONE 0.0s
+
+#3 [stock-service internal] load build definition from Dockerfile
+#3 transferring dockerfile: 742B 0.0s done
+#3 DONE 0.1s
+
+#4 [stock-service internal] load metadata for docker.io/library/golang:1.22-alpine
+#4 ...
+
+#5 [api-gateway internal] load metadata for docker.io/library/alpine:latest
+#5 DONE 0.2s
+
+#4 [stock-service internal] load metadata for docker.io/library/golang:1.22-alpine
+#4 DONE 2.4s
+
+#6 [api-gateway internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [stock-service internal] load .dockerignore
+#7 transferring context: 2B done
+#7 DONE 0.1s
+
+#8 [api-gateway builder 1/8] FROM docker.io/library/golang:1.22-alpine@sha256:1699c10032ca2582ec89a24a1312d986a3f094aed3d5c1147b19880afe40e052
+#8 resolve docker.io/library/golang:1.22-alpine@sha256:1699c10032ca2582ec89a24a1312d986a3f094aed3d5c1147b19880afe40e052 0.0s done
+#8 DONE 0.0s
+
+#9 [stock-service stage-1 1/5] FROM docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+#9 resolve docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 0.0s done
+#9 DONE 0.0s
+
+#10 [api-gateway stage-1 2/5] RUN apk --no-cache add ca-certificates
+#10 CACHED
+
+#11 [api-gateway stage-1 3/5] WORKDIR /root/
+#11 CACHED
+
+#12 [stock-service internal] load build context
+#12 ...
+
+#13 [api-gateway internal] load build context
+#13 transferring context: 67.05MB 4.8s done
+#13 DONE 4.9s
+
+#14 [api-gateway builder 2/7] WORKDIR /build
+#14 CACHED
+
+#15 [api-gateway builder 3/7] COPY go.mod go.sum ./
+#15 CACHED
+
+#16 [api-gateway builder 4/7] COPY proto ./proto
+#16 CACHED
+
+#12 [stock-service internal] load build context
+#12 transferring context: 141.29MB 8.4s done
+#12 DONE 8.5s
+
+#17 [api-gateway builder 5/7] RUN go mod download
+#17 ...
+
+#14 [stock-service builder 2/7] WORKDIR /build
+#14 CACHED
+
+#18 [stock-service builder 3/7] COPY go.mod go.sum ./
+#18 ERROR: failed to calculate checksum of ref mvnkfxsme31q4fbrubzettk4w::kmi86lw7ku7hloumcajio350o: "/go.sum": not found
+
+#17 [api-gateway builder 5/7] RUN go mod download
+#17 CANCELED
+------
+ > [stock-service builder 3/7] COPY go.mod go.sum ./:
+------
+Dockerfile:8
+
+--------------------
+
+   6 |     
+
+   7 |     # 复制 go.mod 和 go.sum 文件
+
+   8 | >>> COPY go.mod go.sum ./
+
+   9 |     
+
+  10 |     # 复制 proto 生成物（已在仓库内）
+
+--------------------
+
+target stock-service: failed to solve: failed to compute cache key: failed to calculate checksum of ref mvnkfxsme31q4fbrubzettk4w::kmi86lw7ku7hloumcajio350o: "/go.sum": not found
+
+
+
+View build details: docker-desktop://dashboard/build/default/default/am1usl0ianjle18tkv20qjry6
+

@@ -1,0 +1,21 @@
+Name: goods-rpc
+ListenOn: 0.0.0.0:9001
+Mode: dev
+Timeout: 0
+
+# MySQL 数据库配置
+MySQL:
+  Host: 127.0.0.1
+  Port: 3306
+  User: root
+  Password: "123456"
+  Database: mysql_demo
+  Charset: utf8mb4
+
+# Redis 配置
+RedisConf:
+  Host: 127.0.0.1
+  Port: 6379
+  Password: ""
+  DB: 0
+  PoolSize: 10

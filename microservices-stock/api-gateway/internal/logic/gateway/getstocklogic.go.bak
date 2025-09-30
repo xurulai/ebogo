@@ -1,0 +1,56 @@
+package gateway
+
+import (
+	"context"
+
+	"api-gateway/internal/svc"
+	"api-gateway/internal/types"
+	stockpb "microservices-stock-proto/stock"
+
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+type GetStockLogic struct {
+	logx.Logger
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+}
+
+func NewGetStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetStockLogic {
+	return &GetStockLogic{
+		Logger: logx.WithContext(ctx),
+		ctx:    ctx,
+		svcCtx: svcCtx,
+	}
+}
+
+func (l *GetStockLogic) GetStock(req *types.GetStockRequest) (resp *types.CommonResponse, err error) {
+	// 组装 gRPC 请求
+	stockReq := &stockpb.GetStockRequest{
+		GoodsId: req.GoodsId,
+	}
+
+	// 调用 RPC 服务
+	stockResp, err := l.svcCtx.StockRpc.GetStock(l.ctx, stockReq)
+	if err != nil {
+		l.Errorf("GetStock RPC call failed: %v", err)
+		return &types.CommonResponse{
+			Success: false,
+			Message: "获取库存失败",
+		}, nil
+	}
+
+	// 转换响应数据
+	data := types.StockResponse{
+		GoodsId: stockResp.GoodsId,
+		Stock:   stockResp.Stock,
+	}
+
+	// 返回响应
+	return &types.CommonResponse{
+		Success: true,
+		Message: "获取库存成功",
+		Data:    data,
+	}, nil
+}
+

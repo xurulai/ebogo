@@ -1,0 +1,5 @@
+google.golang.org/grpc v1.65.0 h1:bs/cUb4lp1G5iImFFd3u5IXLqYB0mLFCOWnPi8a0g98=
+google.golang.org/grpc v1.65.0/go.mod h1:WAX/3/8Rg8FQFXTlRJB8RX4v4DZyf0wGZCt3inMp5bI=
+google.golang.org/protobuf v1.36.5 h1:m9xLSh3aRGiQSycM8SL/YeTzHFfI0Wv/R0mPF1x6Lg8=
+google.golang.org/protobuf v1.36.5/go.mod h1:zA7cp0bXU+7bOZP26D9BtCSh0QSWoUpKYWkqCq39K9c=
+

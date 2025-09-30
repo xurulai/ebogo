@@ -1,0 +1,16 @@
+package config
+
+import (
+	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/zrpc"
+)
+
+// Config API 网关配置结构体
+type Config struct {
+	// go-zero HTTP 服务基础配置（端口、超时、日志等）
+	rest.RestConf
+
+	// 库存 RPC 服务配置（直连地址或注册中心）
+	StockRpc zrpc.RpcClientConf
+}
+

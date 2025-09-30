@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库服务
+  # 统一使用 order-mysql，这里移除独立 mysql 服务
+
+  # Redis 缓存服务
+  redis:
+    image: redis:7-alpine
+    container_name: microservice-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 商品核心服务（内部服务，不对外暴露）
+  goods-service:
+    build:
+      context: ./goods-rpc-service
+      dockerfile: Dockerfile
+    container_name: goods-service
+    restart: unless-stopped
+    ports:
+      - "9001:9001"  # 映射容器9001到宿主机9001
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DB=mysql_demo
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./goods-rpc-service/etc/goods-rpc-docker.yaml:/root/etc/goods-rpc.yaml
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API 网关（统一对外入口）
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"  # 对外暴露的唯一端口
+    environment:
+      - GOODS_SERVICE_ENDPOINT=goods-service:9001
+    volumes:
+      - ./api-gateway/etc/gateway-api-docker.yaml:/root/etc/gateway-api.yaml
+    depends_on:
+      goods-service:
+        condition: service_healthy
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v1/goods/room?room_id=1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  microservice-network:
+    external: true
+
+volumes:
+  redis_data:
+    driver: local

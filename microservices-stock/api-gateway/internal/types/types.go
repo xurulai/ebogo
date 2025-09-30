@@ -1,0 +1,59 @@
+package types
+
+// SetStockRequest 设置库存请求
+type SetStockRequest struct {
+	GoodsId int64 `json:"goods_id" validate:"required,gt=0"` // 商品ID
+	Stock   int64 `json:"stock" validate:"required,gte=0"`   // 库存数量
+}
+
+// GetStockRequest 获取库存请求
+type GetStockRequest struct {
+	GoodsId int64 `form:"goods_id" validate:"required,gt=0"` // 商品ID
+}
+
+// ReduceStockRequest 减少库存请求
+type ReduceStockRequest struct {
+	GoodsId int64 `json:"goods_id" validate:"required,gt=0"` // 商品ID
+	Num     int64 `json:"num" validate:"required,gt=0"`      // 减少数量
+	OrderId int64 `json:"order_id" validate:"required,gt=0"` // 订单ID
+}
+
+// RollbackStockRequest 回滚库存请求
+type RollbackStockRequest struct {
+	GoodsId     int64 `json:"goods_id" validate:"required,gt=0"`     // 商品ID
+	RollbackNum int64 `json:"rollback_num" validate:"required,gt=0"` // 回滚数量
+	OrderId     int64 `json:"order_id" validate:"required,gt=0"`     // 订单ID
+}
+
+// BatchStockRequest 批量库存请求
+type BatchStockRequest struct {
+	Items []StockItem `json:"items" validate:"required,dive"`
+}
+
+// StockItem 库存项
+type StockItem struct {
+	GoodsId int64 `json:"goods_id" validate:"required,gt=0"` // 商品ID
+	Stock   int64 `json:"stock" validate:"required,gte=0"`   // 库存数量
+}
+
+// CommonResponse 通用响应
+type CommonResponse struct {
+	Success bool   `json:"success"`        // 操作是否成功
+	Message string `json:"message"`        // 操作结果描述
+	Data    any    `json:"data,omitempty"` // 响应数据
+}
+
+// StockResponse 库存响应
+type StockResponse struct {
+	GoodsId int64 `json:"goods_id"` // 商品ID
+	Stock   int64 `json:"stock"`    // 库存数量
+}
+
+// BatchStockResponse 批量库存响应
+type BatchStockResponse struct {
+	Items []StockResponse `json:"items"`
+}
+
+
+
+

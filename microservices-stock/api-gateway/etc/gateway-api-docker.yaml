@@ -1,0 +1,14 @@
+Name: stock-gateway
+Host: 0.0.0.0
+Port: 8080
+Mode: prod
+
+# 库存 RPC 服务配置（Docker 环境）
+StockRpc:
+  Endpoints:
+    - stock-service:8889
+  Timeout: 5000
+
+
+
+

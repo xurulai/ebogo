@@ -1,0 +1,119 @@
+time="2025-09-28T19:54:03+08:00" level=warning msg="/Users/xurulai/ebogo/microservices-goods/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 781B done
+#1 DONE 0.0s
+
+#2 [api-gateway internal] load build definition from Dockerfile
+#2 transferring dockerfile: 868B 0.0s done
+#2 DONE 0.1s
+
+#3 [goods-service internal] load build definition from Dockerfile
+#3 transferring dockerfile: 782B 0.0s done
+#3 DONE 0.1s
+
+#4 [goods-service internal] load metadata for docker.io/library/alpine:latest
+#4 DONE 0.2s
+
+#5 [api-gateway internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [api-gateway 1/7] FROM docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+#6 resolve docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 0.0s done
+#6 DONE 0.0s
+
+#7 [api-gateway internal] load build context
+#7 transferring context: 144B done
+#7 DONE 0.0s
+
+#8 [api-gateway 2/7] RUN apk --no-cache add ca-certificates tzdata wget
+#8 CACHED
+
+#9 [api-gateway 3/7] RUN addgroup -g 1001 -S appgroup &&     adduser -u 1001 -S appuser -G appgroup
+#9 CACHED
+
+#10 [api-gateway 4/7] WORKDIR /root/
+#10 CACHED
+
+#11 [api-gateway 6/7] COPY etc ./etc
+#11 CACHED
+
+#12 [api-gateway 5/7] COPY gateway-api .
+#12 CACHED
+
+#13 [api-gateway 7/7] RUN chown -R appuser:appgroup /root/ &&     chmod +x /root/gateway-api
+#13 CACHED
+
+#14 [api-gateway] exporting to image
+#14 exporting layers done
+#14 exporting manifest sha256:1d15cd37fd6891532d1153e513477dedbb11dafce6c83872c627668a84409c3e done
+#14 exporting config sha256:807bdfb655492da7187c991a71adac0aedece2dbacb320ad8fb7d2df0287d2ae done
+#14 exporting attestation manifest sha256:a8402bdb7550ed6f6958417cdb510c1b454af3cd6854ea0b0485f12984929f87 done
+#14 exporting manifest list sha256:6292370e96b1cae1a2b18c4773e9d6a0729c916191503c22b2e466224440e2aa done
+#14 naming to docker.io/library/microservices-goods-api-gateway:latest done
+#14 unpacking to docker.io/library/microservices-goods-api-gateway:latest done
+#14 DONE 0.1s
+
+#15 [goods-service internal] load metadata for docker.io/library/golang:1.22-alpine
+#15 ...
+
+#16 [api-gateway] resolving provenance for metadata file
+#16 DONE 0.1s
+
+#15 [goods-service internal] load metadata for docker.io/library/golang:1.22-alpine
+#15 DONE 2.4s
+
+#17 [goods-service internal] load .dockerignore
+#17 transferring context: 2B done
+#17 DONE 0.0s
+
+#18 [goods-service builder 1/8] FROM docker.io/library/golang:1.22-alpine@sha256:1699c10032ca2582ec89a24a1312d986a3f094aed3d5c1147b19880afe40e052
+#18 resolve docker.io/library/golang:1.22-alpine@sha256:1699c10032ca2582ec89a24a1312d986a3f094aed3d5c1147b19880afe40e052 0.0s done
+#18 DONE 0.0s
+
+#6 [goods-service stage-1 1/5] FROM docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+#6 resolve docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 0.0s done
+#6 DONE 0.0s
+
+#19 [goods-service stage-1 2/5] RUN apk --no-cache add ca-certificates
+#19 CACHED
+
+#20 [goods-service stage-1 3/5] WORKDIR /root/
+#20 CACHED
+
+#21 [goods-service internal] load build context
+#21 transferring context: 52.53MB 5.0s
+#21 transferring context: 248.37MB 10.0s
+#21 transferring context: 349.56MB 12.5s done
+#21 DONE 12.5s
+
+#22 [goods-service builder 2/8] WORKDIR /app
+#22 CACHED
+
+#23 [goods-service builder 3/7] COPY go.mod go.sum ./
+#23 ERROR: failed to calculate checksum of ref mvnkfxsme31q4fbrubzettk4w::ur91ey2ul3n2y3jwwm5ej4n2r: "/go.sum": not found
+------
+ > [goods-service builder 3/7] COPY go.mod go.sum ./:
+------
+Dockerfile:10
+
+--------------------
+
+   8 |     
+
+   9 |     # 复制go mod文件
+
+  10 | >>> COPY go.mod go.sum ./
+
+  11 |     
+
+  12 |     # 复制 proto 生成物（已在仓库内）
+
+--------------------
+
+target goods-service: failed to solve: failed to compute cache key: failed to calculate checksum of ref mvnkfxsme31q4fbrubzettk4w::ur91ey2ul3n2y3jwwm5ej4n2r: "/go.sum": not found
+
+
+
+View build details: docker-desktop://dashboard/build/default/default/8isqnsqqxnoo63xnk74hh7wl5
+

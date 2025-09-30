@@ -1,0 +1,60 @@
+package gateway
+
+import (
+	"context"
+
+	"api-gateway/internal/svc"
+	"api-gateway/internal/types"
+	stockpb "api-gateway/proto/stock"
+
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+type BatchReduceStockLogic struct {
+	logx.Logger
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+}
+
+func NewBatchReduceStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *BatchReduceStockLogic {
+	return &BatchReduceStockLogic{
+		Logger: logx.WithContext(ctx),
+		ctx:    ctx,
+		svcCtx: svcCtx,
+	}
+}
+
+func (l *BatchReduceStockLogic) BatchReduceStock(req *types.BatchStockRequest) (resp *types.CommonResponse, err error) {
+	// 组装 gRPC 请求
+	var stockItems []*stockpb.GoodsStockInfo
+	for _, item := range req.Items {
+		stockItems = append(stockItems, &stockpb.GoodsStockInfo{
+			GoodsId: item.GoodsId,
+			Stock:   item.Stock,
+		})
+	}
+
+	stockReq := &stockpb.StockInfoList{
+		Data: stockItems,
+	}
+
+	// 调用 RPC 服务
+	stockResp, err := l.svcCtx.StockRpc.BatchReduceStock(l.ctx, stockReq)
+	if err != nil {
+		l.Errorf("BatchReduceStock RPC call failed: %v", err)
+		return &types.CommonResponse{
+			Success: false,
+			Message: "批量扣减库存失败",
+		}, nil
+	}
+
+	// 返回响应
+	return &types.CommonResponse{
+		Success: stockResp.Success,
+		Message: stockResp.Message,
+	}, nil
+}
+
+
+
+

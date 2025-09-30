@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package goods;
+option go_package = "goods-rpc-service/proto/goods";
+
+// 商品信息
+message Goods {
+  int64 goods_id = 1;
+  int64 category_id = 2;
+  string title = 3;
+  string code = 4;
+  string brand_name = 5;
+  string market_price = 6;  // 市场价格（字符串格式，如"99.99"）
+  string price = 7;         // 销售价格（字符串格式，如"89.99"）
+  string brief = 8;
+  int32 status = 9;
+  int64 created_at = 10;
+  int64 updated_at = 11;
+}
+
+// 商品简要信息（用于列表）
+message GoodsInfo {
+  int64 goods_id = 1;
+  int64 category_id = 2;
+  int32 status = 3;
+  string title = 4;
+  string market_price = 5;
+  string price = 6;
+  string brief = 7;
+}
+
+// 获取直播间商品请求
+message GetGoodsByRoomRequest {
+  int64 user_id = 1;
+  int64 room_id = 2;
+}
+
+// 获取直播间商品响应
+message GetGoodsByRoomResponse {
+  int64 current_goods_id = 1;
+  repeated GoodsInfo data = 2;
+}
+
+// 获取商品详情请求
+message GetGoodsDetailRequest {
+  int64 goods_id = 1;
+  int64 user_id = 2;
+}
+
+// 获取商品详情响应
+message GetGoodsDetailResponse {
+  Goods goods = 1;
+}
+
+// 更新商品详情请求
+message UpdateGoodsDetailRequest {
+  int64 goods_id = 1;
+  int64 price = 2;  // 价格（分为单位）
+}
+
+// 更新商品详情响应
+message UpdateGoodsDetailResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// 商品服务定义
+service GoodsService {
+  // 获取直播间商品列表
+  rpc GetGoodsByRoom(GetGoodsByRoomRequest) returns (GetGoodsByRoomResponse);
+  
+  // 获取商品详情
+  rpc GetGoodsDetail(GetGoodsDetailRequest) returns (GetGoodsDetailResponse);
+  
+  // 更新商品详情
+  rpc UpdateGoodsDetail(UpdateGoodsDetailRequest) returns (UpdateGoodsDetailResponse);
+}

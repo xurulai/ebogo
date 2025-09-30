@@ -1,0 +1,29 @@
+Name: gateway-api
+Host: 0.0.0.0
+Port: 8080
+
+# 日志配置（go-zero）
+Log:
+  ServiceName: gateway-api
+  Mode: file
+  Path: logs
+  Level: info
+  Encoding: json
+
+# gRPC服务配置（直连本地 RPC 服务）
+GoodsRpc:
+  Endpoints:
+    - 127.0.0.1:9001
+  Timeout: 0
+
+# 其他HTTP后端服务示例（可选）
+Services:
+  GoodsApi:
+    Endpoint: "http://localhost:8888"
+    Timeout: 0
+  UserApi:
+    Endpoint: "http://localhost:8001"  
+    Timeout: 0
+  OrderApi:
+    Endpoint: "http://localhost:8002"
+    Timeout: 0

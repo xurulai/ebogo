@@ -1,0 +1,29 @@
+package gateway
+
+import (
+	"net/http"
+
+	"api-gateway/internal/logic/gateway"
+	"api-gateway/internal/svc"
+	"api-gateway/internal/types"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
+)
+
+func GetStockHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req types.GetStockRequest
+		if err := httpx.Parse(r, &req); err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
+		}
+
+		l := gateway.NewGetStockLogic(r.Context(), svcCtx)
+		resp, err := l.GetStock(&req)
+		if err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+		} else {
+			httpx.OkJsonCtx(r.Context(), w, resp)
+		}
+	}
+}

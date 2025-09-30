@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package order;
+
+// 设置 Go package 路径，用于生成的 Go 代码
+option go_package = "microservices-order-proto/order";
+
+// 订单服务定义
+service OrderService {
+    // 创建订单
+    rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+    // 获取订单列表
+    rpc GetOrderList(GetOrderListRequest) returns (GetOrderListResponse);
+    // 获取订单详情
+    rpc GetOrderDetail(GetOrderDetailRequest) returns (GetOrderDetailResponse);
+    // 更新订单状态
+    rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+}
+
+// 创建订单请求
+message CreateOrderRequest {
+    int64 goods_id = 1;   // 商品ID
+    int32 num = 2;        // 商品数量
+    int64 user_id = 3;    // 用户ID
+    string address = 4;   // 收货地址
+    string name = 5;      // 收货人姓名
+    string phone = 6;     // 收货人电话
+}
+
+// 创建订单响应
+message CreateOrderResponse {
+    bool success = 1;     // 操作状态
+    string message = 2;   // 响应消息
+    int64 order_id = 3;   // 订单ID
+    string price = 4;     // 商品价格
+}
+
+// 获取订单列表请求
+message GetOrderListRequest {
+    int64 user_id = 1;    // 用户ID
+    int32 page_num = 2;   // 当前页码
+    int32 page_size = 3;  // 每页大小
+}
+
+// 获取订单列表响应
+message GetOrderListResponse {
+    int32 total = 1;                    // 总记录数
+    repeated OrderInfo orders = 2;      // 订单信息列表
+}
+
+// 订单信息
+message OrderInfo {
+    int64 order_id = 1;        // 订单ID
+    int64 user_id = 2;         // 用户ID
+    string status = 3;         // 订单状态
+    string pay_channel = 4;    // 支付渠道
+    int64 pay_amount = 5;      // 支付金额（分）
+    string receive_address = 6; // 收货地址
+    string receive_name = 7;    // 收货人姓名
+    string receive_phone = 8;   // 收货人电话
+    int64 created_at = 9;      // 创建时间
+    repeated OrderDetailInfo order_details = 10; // 订单详情列表
+}
+
+// 订单详情信息
+message OrderDetailInfo {
+    int64 order_id = 1;    // 订单ID
+    int64 goods_id = 2;    // 商品ID
+    int64 num = 3;         // 商品数量
+    string title = 4;      // 商品标题
+    string status = 5;     // 详情状态
+    int64 price = 6;       // 商品价格（分）
+    string brief = 7;      // 商品简介
+    int64 pay_amount = 8;  // 支付金额（分）
+}
+
+// 获取订单详情请求
+message GetOrderDetailRequest {
+    int64 order_id = 1;  // 订单ID
+    int64 user_id = 2;   // 用户ID
+}
+
+// 获取订单详情响应
+message GetOrderDetailResponse {
+    OrderInfo order = 1;  // 订单信息
+}
+
+// 更新订单状态请求
+message UpdateOrderStatusRequest {
+    int64 order_id = 1;  // 订单ID
+    string status = 2;   // 新的订单状态
+}
+
+// 更新订单状态响应
+message UpdateOrderStatusResponse {
+    bool success = 1;    // 操作状态
+    string message = 2;  // 响应消息
+}
+
+
+
+

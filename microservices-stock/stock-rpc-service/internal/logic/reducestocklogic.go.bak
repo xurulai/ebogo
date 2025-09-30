@@ -1,0 +1,51 @@
+package logic
+
+import (
+	"context"
+	stockpb "microservices-stock-proto/stock"
+	"stock-rpc-service/internal/biz"
+	"stock-rpc-service/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+type ReduceStockLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewReduceStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ReduceStockLogic {
+	return &ReduceStockLogic{
+		ctx:    ctx,
+		svcCtx: svcCtx,
+		Logger: logx.WithContext(ctx),
+	}
+}
+
+// ReduceStock 减少库存
+func (l *ReduceStockLogic) ReduceStock(in *stockpb.ReduceStockInfo) (*stockpb.Response, error) {
+	// 参数校验
+	if in.GetGoodsId() <= 0 || in.GetNum() <= 0 {
+		return nil, status.Error(codes.InvalidArgument, "无效的参数")
+	}
+
+	// 创建业务逻辑实例
+	stockBiz := biz.NewStockBiz(l.svcCtx)
+
+	// 调用业务逻辑减少库存
+	err := stockBiz.ReduceStock(l.ctx, in.GetGoodsId(), in.GetNum(), in.GetOrderId())
+	if err != nil {
+		l.Errorf("ReduceStock failed: %v", err)
+		return nil, status.Errorf(codes.Internal, "扣减库存失败: %v", err)
+	}
+
+	// 返回成功响应
+	return &stockpb.Response{
+		Success: true,
+		Message: "扣减库存成功",
+	}, nil
+}
+

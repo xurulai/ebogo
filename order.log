@@ -1,0 +1,187 @@
+time="2025-09-28T19:54:03+08:00" level=warning msg="/Users/xurulai/ebogo/microservices-order/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 769B done
+#1 DONE 0.0s
+
+#2 [order-service internal] load build definition from Dockerfile
+#2 DONE 0.0s
+
+#2 [order-service internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.08kB 0.0s done
+#2 DONE 0.0s
+
+#3 [api-gateway internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.06kB 0.0s done
+#3 DONE 0.1s
+
+#4 [api-gateway internal] load metadata for docker.io/library/golang:1.22-alpine
+#4 ...
+
+#5 [order-service internal] load metadata for docker.io/library/alpine:latest
+#5 DONE 0.2s
+
+#4 [api-gateway internal] load metadata for docker.io/library/golang:1.22-alpine
+#4 DONE 2.5s
+
+#6 [api-gateway internal] load .dockerignore
+#6 transferring context: 2B 0.0s done
+#6 DONE 0.0s
+
+#7 [api-gateway builder 1/8] FROM docker.io/library/golang:1.22-alpine@sha256:1699c10032ca2582ec89a24a1312d986a3f094aed3d5c1147b19880afe40e052
+#7 resolve docker.io/library/golang:1.22-alpine@sha256:1699c10032ca2582ec89a24a1312d986a3f094aed3d5c1147b19880afe40e052 0.0s done
+#7 DONE 0.0s
+
+#8 [api-gateway stage-1 1/5] FROM docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+#8 resolve docker.io/library/alpine:latest@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 0.0s done
+#8 DONE 0.0s
+
+#9 [order-service internal] load build context
+#9 transferring context: 15.50kB 0.4s done
+#9 DONE 0.5s
+
+#10 [order-service builder 2/8] WORKDIR /app
+#10 CACHED
+
+#11 [order-service builder 3/8] RUN apk add --no-cache git
+#11 CACHED
+
+#12 [order-service builder 4/8] COPY proto /proto
+#12 CACHED
+
+#13 [order-service builder 5/8] COPY order-rpc-service/go.mod order-rpc-service/go.sum ./
+#13 CACHED
+
+#14 [order-service builder 6/8] RUN go mod download
+#14 CACHED
+
+#15 [api-gateway internal] load build context
+#15 ...
+
+#16 [order-service builder 7/8] COPY order-rpc-service .
+#16 DONE 3.5s
+
+#15 [api-gateway internal] load build context
+#15 transferring context: 67.01MB 4.7s done
+#15 DONE 4.8s
+
+#17 [order-service builder 8/8] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o order-rpc order-rpc-simple.go
+#17 ...
+
+#18 [api-gateway builder 5/8] COPY api-gateway/go.mod api-gateway/go.sum ./
+#18 CACHED
+
+#19 [api-gateway builder 7/8] COPY api-gateway .
+#19 CACHED
+
+#20 [api-gateway stage-1 3/5] WORKDIR /root/
+#20 CACHED
+
+#10 [api-gateway builder 2/8] WORKDIR /app
+#10 CACHED
+
+#21 [api-gateway builder 4/8] COPY proto /proto
+#21 CACHED
+
+#22 [api-gateway builder 8/8] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gateway gateway.go
+#22 CACHED
+
+#23 [api-gateway stage-1 4/5] COPY --from=builder /app/gateway .
+#23 CACHED
+
+#24 [api-gateway stage-1 2/5] RUN apk --no-cache add ca-certificates curl
+#24 CACHED
+
+#11 [api-gateway builder 3/8] RUN apk add --no-cache git
+#11 CACHED
+
+#25 [api-gateway builder 6/8] RUN go mod download
+#25 CACHED
+
+#26 [api-gateway stage-1 5/5] COPY --from=builder /app/etc ./etc
+#26 CACHED
+
+#27 [api-gateway] exporting to image
+#27 exporting layers 0.0s done
+#27 exporting manifest sha256:45e843c1b0d516c927032af23bcf3175e6f2c582db8d21271c60e5b8e5acc81f done
+#27 exporting config sha256:18c680e2201dd36196af9c591ea5f0774fa6536758782d49a2cc6783f04d5482 0.0s done
+#27 exporting attestation manifest sha256:8d05404e9ecc75cf2460b8a5171f7c80d2382e5bfb5dc2e27aa6fc26633986af
+#27 exporting attestation manifest sha256:8d05404e9ecc75cf2460b8a5171f7c80d2382e5bfb5dc2e27aa6fc26633986af 0.4s done
+#27 exporting manifest list sha256:a64844ad6362497fdfa8333470fa2593320af4b74999f9f78d677d45ea642758
+#27 exporting manifest list sha256:a64844ad6362497fdfa8333470fa2593320af4b74999f9f78d677d45ea642758 0.3s done
+#27 naming to docker.io/library/microservices-order-api-gateway:latest
+#27 naming to docker.io/library/microservices-order-api-gateway:latest 0.0s done
+#27 unpacking to docker.io/library/microservices-order-api-gateway:latest 0.0s done
+#27 DONE 1.0s
+
+#17 [order-service builder 8/8] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o order-rpc order-rpc-simple.go
+#17 ...
+
+#28 [api-gateway] resolving provenance for metadata file
+#28 DONE 0.1s
+
+#17 [order-service builder 8/8] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o order-rpc order-rpc-simple.go
+#17 DONE 79.5s
+
+#29 [order-service stage-1 2/5] RUN apk --no-cache add ca-certificates netcat-openbsd
+#29 CACHED
+
+#30 [order-service stage-1 3/5] WORKDIR /root/
+#30 CACHED
+
+#31 [order-service stage-1 4/5] COPY --from=builder /app/order-rpc .
+#31 CACHED
+
+#32 [order-service stage-1 5/5] COPY --from=builder /app/etc ./etc
+#32 DONE 0.0s
+
+#33 [order-service] exporting to image
+#33 exporting layers
+#33 exporting layers 0.2s done
+#33 exporting manifest sha256:5247a3a5964c24996da0a474c4b5c1927c1b352edc7f7f10a698dc6c1634f478 done
+#33 exporting config sha256:51c89f521e521b79645873a16eee50d78a57d262d2ffcee6720e3cc0c83215dc 0.0s done
+#33 exporting attestation manifest sha256:80cc83c7ebc60da5ca07a141497319a96e333679420ac9a31b49334f86873f9d 0.0s done
+#33 exporting manifest list sha256:a636e7e2ce9122e6ace852c8c707a19c3b35fa1176d2be5432ef6ad867e2eb7e done
+#33 naming to docker.io/library/microservices-order-order-service:latest done
+#33 unpacking to docker.io/library/microservices-order-order-service:latest 0.0s done
+#33 DONE 0.3s
+
+#34 [order-service] resolving provenance for metadata file
+#34 DONE 0.0s
+ order-service  Built
+ api-gateway  Built
+ Container order-rocketmq-nameserver  Creating
+ Container order-redis  Creating
+ Container order-mysql  Creating
+ rocketmq-nameserver The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested 
+ Container order-rocketmq-nameserver  Created
+ Container order-rocketmq-broker  Creating
+ Container order-mysql  Created
+ Container order-redis  Created
+ rocketmq-broker The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested 
+ Container order-rocketmq-broker  Created
+ Container order-service  Creating
+ Container order-service  Created
+ Container order-api-gateway  Creating
+ Container order-api-gateway  Created
+ Container order-mysql  Starting
+ Container order-rocketmq-nameserver  Starting
+ Container order-redis  Starting
+ Container order-rocketmq-nameserver  Started
+ Container order-rocketmq-nameserver  Waiting
+ Container order-redis  Started
+ Container order-mysql  Started
+ Container order-rocketmq-nameserver  Healthy
+ Container order-rocketmq-broker  Starting
+ Container order-rocketmq-broker  Started
+ Container order-rocketmq-broker  Waiting
+ Container order-mysql  Waiting
+ Container order-redis  Waiting
+ Container order-redis  Healthy
+ Container order-mysql  Healthy
+ Container order-rocketmq-broker  Healthy
+ Container order-service  Starting
+ Container order-service  Started
+ Container order-service  Waiting
+ Container order-service  Healthy
+ Container order-api-gateway  Starting
+ Container order-api-gateway  Started

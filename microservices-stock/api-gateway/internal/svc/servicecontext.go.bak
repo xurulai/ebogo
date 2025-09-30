@@ -1,0 +1,23 @@
+package svc
+
+import (
+	"api-gateway/internal/config"
+	stockpb "microservices-stock-proto/stock"
+
+	"github.com/zeromicro/go-zero/zrpc"
+)
+
+// ServiceContext API 网关服务上下文，注入 RPC 客户端
+type ServiceContext struct {
+	Config   config.Config
+	StockRpc stockpb.StockServiceClient // 库存 RPC 客户端
+}
+
+// NewServiceContext 创建服务上下文
+func NewServiceContext(c config.Config) *ServiceContext {
+	return &ServiceContext{
+		Config:   c,
+		StockRpc: stockpb.NewStockServiceClient(zrpc.MustNewClient(c.StockRpc).Conn()),
+	}
+}
+

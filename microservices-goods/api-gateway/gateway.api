@@ -1,0 +1,67 @@
+syntax = "v1"
+
+info (
+	title:   "API网关"
+	desc:    "统一API网关入口"
+	author:  "developer"
+	version: "v1.0.0"
+)
+
+type (
+	GetGoodsByRoomReq {
+		UserId int64 `form:"user_id"`
+		RoomId int64 `form:"room_id" validate:"required,min=1"`
+	}
+	GoodsInfo {
+		GoodsId     int64  `json:"goods_id"`
+		CategoryId  int64  `json:"category_id"`
+		Status      int32  `json:"status"`
+		Title       string `json:"title"`
+		MarketPrice string `json:"market_price"`
+		Price       string `json:"price"`
+		Brief       string `json:"brief"`
+	}
+	GoodsListResp {
+		CurrentGoodsId int64        `json:"current_goods_id"`
+		Data           []*GoodsInfo `json:"data"`
+	}
+	GetGoodsDetailReq {
+		GoodsId int64 `form:"goods_id" validate:"required,min=1"`
+		UserId  int64 `form:"user_id"`
+	}
+	GoodsDetail {
+		GoodsId     int64  `json:"goods_id"`
+		CategoryId  int64  `json:"category_id"`
+		Status      int32  `json:"status"`
+		Title       string `json:"title"`
+		Code        string `json:"code"`
+		BrandName   string `json:"brand_name"`
+		MarketPrice string `json:"market_price"`
+		Price       string `json:"price"`
+		Brief       string `json:"brief"`
+	}
+	UpdateGoodsDetailReq {
+		GoodsId int64 `json:"goods_id" validate:"required,min=1"`
+		Price   int64 `json:"price" validate:"required,min=1"`
+	}
+	Response {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+	}
+)
+
+@server (
+	group:  gateway
+	prefix: /api/v1
+)
+service gateway-api {
+	@handler ProxyGetGoodsByRoom
+	get /goods/room (GetGoodsByRoomReq) returns (GoodsListResp)
+
+	@handler ProxyGetGoodsDetail
+	get /goods/detail (GetGoodsDetailReq) returns (GoodsDetail)
+
+	@handler ProxyUpdateGoods
+	post /goods/update (UpdateGoodsDetailReq) returns (Response)
+}
+

@@ -1,0 +1,106 @@
+syntax = "v1"
+
+info(
+	title: "订单服务 API"
+	desc: "订单服务的 HTTP API 接口定义"
+	author: "订单服务团队"
+	version: "v1.0"
+)
+
+// 创建订单请求
+type CreateOrderRequest {
+	GoodsId int64  `json:"goods_id"`  // 商品ID
+	Num     int32  `json:"num"`       // 商品数量
+	UserId  int64  `json:"user_id"`   // 用户ID
+	Address string `json:"address"`   // 收货地址
+	Name    string `json:"name"`      // 收货人姓名
+	Phone   string `json:"phone"`     // 收货人电话
+}
+
+// 创建订单响应
+type CreateOrderResponse {
+	Success bool   `json:"success"`  // 操作状态
+	Message string `json:"message"`  // 响应消息
+	OrderId int64  `json:"order_id"` // 订单ID
+	Price   string `json:"price"`    // 商品价格
+}
+
+// 获取订单列表请求
+type GetOrderListRequest {
+	UserId   int64 `form:"user_id"`   // 用户ID
+	PageNum  int32 `form:"page_num"`  // 当前页码
+	PageSize int32 `form:"page_size"` // 每页大小
+}
+
+// 订单详情信息
+type OrderDetailInfo {
+	OrderId   int64  `json:"order_id"`   // 订单ID
+	GoodsId   int64  `json:"goods_id"`   // 商品ID
+	Num       int64  `json:"num"`        // 商品数量
+	Title     string `json:"title"`      // 商品标题
+	Status    string `json:"status"`     // 详情状态
+	Price     int64  `json:"price"`      // 商品价格（分）
+	Brief     string `json:"brief"`      // 商品简介
+	PayAmount int64  `json:"pay_amount"` // 支付金额（分）
+}
+
+// 订单信息
+type OrderInfo {
+	OrderId        int64             `json:"order_id"`        // 订单ID
+	UserId         int64             `json:"user_id"`         // 用户ID
+	Status         string            `json:"status"`          // 订单状态
+	PayChannel     string            `json:"pay_channel"`     // 支付渠道
+	PayAmount      int64             `json:"pay_amount"`      // 支付金额（分）
+	ReceiveAddress string            `json:"receive_address"` // 收货地址
+	ReceiveName    string            `json:"receive_name"`    // 收货人姓名
+	ReceivePhone   string            `json:"receive_phone"`   // 收货人电话
+	CreatedAt      int64             `json:"created_at"`      // 创建时间
+	OrderDetails   []OrderDetailInfo `json:"order_details"`   // 订单详情列表
+}
+
+// 获取订单列表响应
+type GetOrderListResponse {
+	Total  int32       `json:"total"`  // 总记录数
+	Orders []OrderInfo `json:"orders"` // 订单信息列表
+}
+
+// 获取订单详情请求
+type GetOrderDetailRequest {
+	OrderId int64 `form:"order_id"` // 订单ID
+	UserId  int64 `form:"user_id"`  // 用户ID
+}
+
+// 获取订单详情响应
+type GetOrderDetailResponse {
+	Order OrderInfo `json:"order"` // 订单信息
+}
+
+// 更新订单状态请求
+type UpdateOrderStatusRequest {
+	OrderId int64  `json:"order_id"` // 订单ID
+	Status  string `json:"status"`   // 新的订单状态
+}
+
+// 更新订单状态响应
+type UpdateOrderStatusResponse {
+	Success bool   `json:"success"` // 操作状态
+	Message string `json:"message"` // 响应消息
+}
+
+service gateway-api {
+	@handler CreateOrderHandler
+	post /api/v1/order/create (CreateOrderRequest) returns (CreateOrderResponse)
+	
+	@handler GetOrderListHandler
+	get /api/v1/order/list (GetOrderListRequest) returns (GetOrderListResponse)
+	
+	@handler GetOrderDetailHandler
+	get /api/v1/order/detail (GetOrderDetailRequest) returns (GetOrderDetailResponse)
+	
+	@handler UpdateOrderStatusHandler
+	post /api/v1/order/status (UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse)
+}
+
+
+
+

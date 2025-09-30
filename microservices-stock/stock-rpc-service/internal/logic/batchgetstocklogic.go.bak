@@ -1,0 +1,59 @@
+package logic
+
+import (
+	"context"
+	stockpb "microservices-stock-proto/stock"
+	"stock-rpc-service/internal/biz"
+	"stock-rpc-service/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+type BatchGetStockLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewBatchGetStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *BatchGetStockLogic {
+	return &BatchGetStockLogic{
+		ctx:    ctx,
+		svcCtx: svcCtx,
+		Logger: logx.WithContext(ctx),
+	}
+}
+
+// BatchGetStock 批量获取库存
+func (l *BatchGetStockLogic) BatchGetStock(in *stockpb.StockInfoList) (*stockpb.StockInfoList, error) {
+	// 参数校验
+	if len(in.GetData()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "商品列表不能为空")
+	}
+
+	// 创建业务逻辑实例
+	stockBiz := biz.NewStockBiz(l.svcCtx)
+
+	var result []*stockpb.GoodsStockInfo
+	for _, item := range in.GetData() {
+		if item.GetGoodsId() <= 0 {
+			continue // 跳过无效的商品ID
+		}
+
+		// 获取单个商品的库存信息
+		stockInfo, err := stockBiz.GetStockByGoodsId(l.ctx, item.GetGoodsId())
+		if err != nil {
+			l.Errorf("BatchGetStock failed for goods_id %d: %v", item.GetGoodsId(), err)
+			// 对于批量操作，我们可以选择跳过失败的项目或返回错误
+			// 这里选择跳过失败的项目，继续处理其他商品
+			continue
+		}
+		result = append(result, stockInfo)
+	}
+
+	return &stockpb.StockInfoList{
+		Data: result,
+	}, nil
+}
+
